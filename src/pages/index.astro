@@ -5,18 +5,18 @@ import ClientsTable from "@/components/react/ClientsTable";
 import QuickActions from "@/components/react/QuickActions";
 import "@/styles/global.css";
 
+// 1. Загружаем все данные из базы (SSR)
 const allClients = await db.query.clients.findMany();
-const allItems = await db.query.items.findMany();
 const allOrders = await db.query.orders.findMany({
   with: {
-    client: true,
-    item: true
+    client: true, // Подгружаем данные клиента для таблицы заказов
+    item: true    // Подгружаем данные товара
   }
 });
+const allItems = await db.query.items.findMany();
 
-const totalSales = allOrders.reduce((sum, order) => sum + (Number(order.amount) || 0), 0);
-const activeClients = allClients.filter(c => c.status === 'active').length;
-
+// Статистика
+const totalSales = allOrders.reduce((sum, order) => sum + (order.amount || 0), 0);
 ---
 
 <html lang="ru">
@@ -61,10 +61,10 @@ const activeClients = allClients.filter(c => c.status === 'active').length;
 
       <!-- Быстрые действия (из предыдущего шага) -->
       <QuickActions 
-          clients={allClients} 
-          items={allItems} 
-          client:load 
-        />
+      clients={allClients} 
+      items={allItems} 
+      client:load 
+    />
 
       <hr class="border-slate-200" />
 
@@ -142,6 +142,7 @@ const activeClients = allClients.filter(c => c.status === 'active').length;
           {allOrders.length === 0 && <div class="p-10 text-center text-slate-400">Заказов пока нет</div>}
         </div>
       </section>
+
     </main>
   </body>
 </html>

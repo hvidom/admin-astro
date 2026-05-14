@@ -1,4 +1,5 @@
-// src/pages/api/update-entity.ts
+export const prerender = false; 
+
 import type { APIRoute } from "astro";
 import { db } from "@/lib/db";
 import { clients, items, orders } from "@/db/schema";

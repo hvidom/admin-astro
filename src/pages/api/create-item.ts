@@ -1,7 +1,8 @@
+export const prerender = false; 
+
 import type { APIRoute } from "astro";
 import { db } from "@/lib/db";
 import { items } from "@/db/schema";
-export const prerender = false;
 export const POST: APIRoute = async ({ request }) => {
   const { name, price, type } = await request.json();
   try {

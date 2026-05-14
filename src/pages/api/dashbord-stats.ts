@@ -1,8 +1,9 @@
+export const prerender = false; 
 import type { APIRoute } from "astro";
 import { db } from "@/lib/db";
 import { orders, clients } from "@/db/schema";
 import { desc, eq } from "drizzle-orm";
-export const prerender = false;
+
 export const GET: APIRoute = async () => {
   try {
     // 1. Считаем общую выручку

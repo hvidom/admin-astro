@@ -1,29 +1,33 @@
+export const prerender = false; // Добавь это первой строкой
+
 import type { APIRoute } from "astro";
 import { db } from "@/lib/db";
-import { orders, clients, items } from "@/db/schema";
-export const prerender = false;
-export const POST: APIRoute = async () => {
-  try {
-    const allClients = await db.select().from(clients);
-    const allItems = await db.select().from(items);
+import { orders, items } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
-    if (allClients.length === 0 || allItems.length === 0) {
-      return new Response(JSON.stringify({ error: "Нет клиентов или товаров для связывания" }), { status: 400 });
+export const POST: APIRoute = async ({ request }) => {
+  try {
+    const { clientId, itemId } = await request.json();
+
+    // 1. Ищем товар в базе, чтобы получить актуальную цену
+    const itemData = await db.select().from(items).where(eq(items.id, Number(itemId))).get();
+
+    if (!itemData) {
+      return new Response(JSON.stringify({ error: "Товар не найден" }), { status: 404 });
     }
 
-    // Выбираем случайных клиентов и товары из базы данных для симуляции сделки
-    const randomClient = allClients[Math.floor(Math.random() * allClients.length)];
-    const randomItem = allItems[Math.floor(Math.random() * allItems.length)];
-
+    // 2. Вставляем заказ с реальной ценой
     await db.insert(orders).values({
-      clientId: randomClient.id,
-      itemId: randomItem.id,
-      amount: randomItem.price,
+      clientId: Number(clientId),
+      itemId: Number(itemId),
+      amount: Number(itemData.price), // Теперь здесь точно число, а не NaN
       status: "completed",
+      createdAt: new Date().toISOString().slice(0, 19).replace('T', ' '),
     });
 
     return new Response(JSON.stringify({ success: true }), { status: 200 });
   } catch (err) {
-    return new Response(JSON.stringify({ error: "Ошибка транзакции" }), { status: 500 });
+    console.error(err);
+    return new Response(JSON.stringify({ error: "Ошибка сервера" }), { status: 500 });
   }
 };
