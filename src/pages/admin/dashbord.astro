@@ -1,0 +1,21 @@
+---
+export const prerender = false;
+import AdminDashboard from "@/components/react/AdminDashboard";
+import "@/styles/global.css";
+
+// Защита админки
+const adminCookie = Astro.cookies.get("admin_session");
+if (!adminCookie || adminCookie.value !== "is_logged_in") {
+    return Astro.redirect("/admin/login");
+}
+---
+
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <title>Admin Dashboard | Astro CRM</title>
+</head>
+<body class="bg-slate-50 antialiased">
+    <AdminDashboard client:load />
+</body>
+</html>

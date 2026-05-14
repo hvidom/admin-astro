@@ -14,7 +14,8 @@ export default defineConfig({
     plugins: [tailwindcss()]
   },
 
+  output: 'server', // Убедись, что здесь стоит 'server' или 'hybrid'
   adapter: node({
-    mode: 'standalone'
-  })
+    mode: 'standalone',
+  }),
 });
