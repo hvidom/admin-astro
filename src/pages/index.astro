@@ -1,27 +1,34 @@
 ---
 // src/pages/index.astro
 import { db } from "@/lib/db";
-import ClientsTable from "@/components/ClientsTable"; // Наш React-компонент
-import Layout from "@/layouts/Layout.astro";
+import ClientsTable from "@/components/react/ClientsTable";
+import QuickActions from "@/components/react/QuickActions";
+import "@/styles/global.css";
 
-// 1. Получаем данные из local.db на этапе серверного рендеринга (SSR)
 const allClients = await db.query.clients.findMany();
-const allOrders = await db.query.orders.findMany();
-const contactSubmissions = await db.query.contactSubmissions.findMany();
+const allItems = await db.query.items.findMany();
+const allOrders = await db.query.orders.findMany({
+  with: {
+    client: true,
+    item: true
+  }
+});
 
-// Вычисляем быструю статистику для дашборда
-const totalSales = allOrders.reduce((sum, order) => sum + order.amount, 0);
+const totalSales = allOrders.reduce((sum, order) => sum + (Number(order.amount) || 0), 0);
+const activeClients = allClients.filter(c => c.status === 'active').length;
+
 ---
 
-<Layout>
-  <body class="bg-slate-50 min-h-screen text-slate-900 antialiased">
-    
-    <header class="border-b bg-white">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        <div class="flex items-center space-x-3">
-          <div class="w-8 h-8 bg-black rounded-lg flex items-center justify-center text-white font-bold text-sm">A</div>
-          <span class="font-semibold text-lg tracking-tight">Astro Admin</span>
-        </div>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <title>Панель управления CRM</title>
+  </head>
+  <body class="bg-slate-50 min-h-screen pb-20">
+    <header class="border-b bg-white sticky top-0 z-10">
+      <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+        <span class="font-bold text-xl tracking-tight">Astro CRM</span>
+        <div class="text-xs font-mono text-slate-400">v1.0.4 | SQLite Connected</div>
         <div class="flex items-center space-x-4">
           <span class="text-xs bg-emerald-100 text-emerald-800 font-medium px-2.5 py-0.5 rounded-full flex items-center gap-1.5">
             <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
@@ -29,36 +36,112 @@ const totalSales = allOrders.reduce((sum, order) => sum + order.amount, 0);
           </span>
         </div>
       </div>
+      </div>
     </header>
 
-    <main class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+    <main class="max-w-7xl mx-auto py-8 px-4 space-y-12">
       
-      <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+      <!-- Блок статистики -->
+      <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div class="bg-white p-6 rounded-xl border shadow-sm">
-          <p class="text-sm font-medium text-muted-foreground text-slate-500">Всего клиентов</p>
-          <h3 class="text-3xl font-bold tracking-tight mt-1">{allClients.length}</h3>
+          <p class="text-sm text-slate-500">Клиенты</p>
+          <p class="text-3xl font-bold">{allClients.length}</p>
         </div>
         <div class="bg-white p-6 rounded-xl border shadow-sm">
-          <p class="text-sm font-medium text-muted-foreground text-slate-500">Заказов оформлено</p>
-          <h3 class="text-3xl font-bold tracking-tight mt-1">{allOrders.length}</h3>
+          <p class="text-sm text-slate-500">Товары в каталоге</p>
+          <p class="text-3xl font-bold">{allItems.length}</p>
         </div>
-        <div class="bg-white p-6 rounded-xl border shadow-sm">
-          <p class="text-sm font-medium text-muted-foreground text-slate-500">Общая сумма продаж</p>
-          <h3 class="text-3xl font-bold tracking-tight mt-1">
-            {totalSales.toLocaleString('ru-RU', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })}
-          </h3>
+        <div class="bg-white p-6 rounded-xl border shadow-sm border-emerald-100">
+          <p class="text-sm text-emerald-600 font-medium">Выручка</p>
+          <p class="text-3xl font-bold text-emerald-700">
+            {totalSales.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
+          </p>
         </div>
       </section>
 
-      <div class="space-y-6">
-        <div class="flex items-center justify-between">
-          <div>
-            <h1 class="text-3xl font-bold tracking-tight">Панель управления</h1>
-            <p class="text-slate-500 text-sm mt-1">Просмотр и редактирование данных в реальном времени.</p>
-          </div>
+      <!-- Быстрые действия (из предыдущего шага) -->
+      <QuickActions 
+          clients={allClients} 
+          items={allItems} 
+          client:load 
+        />
+
+      <hr class="border-slate-200" />
+
+      <!-- СЕКЦИЯ: ТАБЛИЦА КЛИЕНТОВ -->
+      <section>
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-2xl font-bold">👤 База клиентов</h2>
         </div>
-
         <ClientsTable initialClients={allClients} client:load />
-      </div>
+      </section>
 
-    </Layout>
+      <!-- СЕКЦИЯ: ТАБЛИЦА ТОВАРОВ -->
+      <section>
+        <h2 class="text-2xl font-bold mb-4">📦 Каталог товаров и услуг</h2>
+        <div class="bg-white border rounded-xl overflow-hidden shadow-sm">
+          <table class="w-full text-sm text-left">
+            <thead class="bg-slate-50 border-b text-slate-500 uppercase text-xs">
+              <tr>
+                <th class="px-6 py-4 font-semibold">Название</th>
+                <th class="px-6 py-4 font-semibold">Тип</th>
+                <th class="px-6 py-4 font-semibold">Цена</th>
+                <th class="px-6 py-4 font-semibold">Склад</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y">
+              {allItems.map(item => (
+                <tr class="hover:bg-slate-50 transition-colors">
+                  <td class="px-6 py-4 font-medium">{item.name}</td>
+                  <td class="px-6 py-4">
+                    <span class={`px-2 py-1 rounded text-[10px] font-bold uppercase ${item.type === 'product' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'}`}>
+                      {item.type === 'product' ? 'Товар' : 'Услуга'}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4">${item.price}</td>
+                  <td class="px-6 py-4 text-slate-500">{item.stock !== null ? `${item.stock} шт.` : '—'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- СЕКЦИЯ: ТАБЛИЦА ЗАКАЗОВ -->
+      <section>
+        <h2 class="text-2xl font-bold mb-4">🛒 Последние заказы</h2>
+        <div class="bg-white border rounded-xl overflow-hidden shadow-sm">
+          <table class="w-full text-sm text-left">
+            <thead class="bg-slate-50 border-b text-slate-500 uppercase text-xs">
+              <tr>
+                <th class="px-6 py-4 font-semibold">ID</th>
+                <th class="px-6 py-4 font-semibold">Клиент</th>
+                <th class="px-6 py-4 font-semibold">Товар</th>
+                <th class="px-6 py-4 font-semibold">Сумма</th>
+                <th class="px-6 py-4 font-semibold">Статус</th>
+                <th class="px-6 py-4 font-semibold">Дата</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y">
+              {allOrders.map(order => (
+                <tr class="hover:bg-slate-50 transition-colors">
+                  <td class="px-6 py-4 text-slate-400 text-xs">#{order.id}</td>
+                  <td class="px-6 py-4 font-medium">{(order as any).client?.name}</td>
+                  <td class="px-6 py-4 text-slate-600">{(order as any).item?.name}</td>
+                  <td class="px-6 py-4 font-bold text-slate-900">${order.amount}</td>
+                  <td class="px-6 py-4">
+                    <span class={`px-2 py-1 rounded-full text-[10px] font-bold ${order.status === 'completed' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
+                      {order.status === 'completed' ? 'Оплачен' : 'В обработке'}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 text-slate-500 text-xs">{new Date(order.createdAt!).toLocaleDateString('ru-RU')}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {allOrders.length === 0 && <div class="p-10 text-center text-slate-400">Заказов пока нет</div>}
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
