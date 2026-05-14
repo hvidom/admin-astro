@@ -1,0 +1,59 @@
+---
+export const prerender = false;
+import Layout from "@/layouts/Layout.astro";
+// 1. Инициализируем переменную заранее
+let errorMessage: string | null = null; 
+
+const adminCookie = Astro.cookies.get("admin_session");
+if (adminCookie?.value === "is_logged_in") {
+    return Astro.redirect("/admin");
+}
+
+if (Astro.request.method === "POST") {
+    const formData = await Astro.request.formData();
+    const user = formData.get("username");
+    const pass = formData.get("password");
+
+    if (user === import.meta.env.ADMIN_USERNAME && pass === import.meta.env.ADMIN_PASSWORD) {
+        Astro.cookies.set("admin_session", "is_logged_in", { 
+            path: "/", 
+            httpOnly: true,
+            secure: true,
+            sameSite: "lax"
+        });
+        return Astro.redirect("/admin");
+    } else {
+        // 2. Присваиваем значение при ошибке
+        errorMessage = "Неверный логин или пароль";
+    }
+}
+---
+<Layout>
+
+    <div class="min-h-screen flex items-center justify-center bg-slate-950 px-4 text-white">
+        <div class="max-w-md w-full space-y-8">
+            <div class="text-center">
+                <h1 class="text-3xl font-black tracking-tighter">ADMIN ACCESS</h1>
+            </div>
+    
+            <form method="POST" class="space-y-4">
+                <!-- 3. Используем новую переменную с проверкой -->
+                {errorMessage && (
+                    <div class="bg-rose-500/10 border border-rose-500/20 text-rose-500 p-3 rounded-xl text-sm text-center">
+                        {errorMessage}
+                    </div>
+                )}
+                
+                <input name="username" type="text" placeholder="Username" required 
+                    class="w-full p-4 rounded-2xl bg-slate-900 border-slate-800 border focus:ring-2 ring-indigo-500 outline-none transition-all" />
+                
+                <input name="password" type="password" placeholder="Password" required 
+                    class="w-full p-4 rounded-2xl bg-slate-900 border-slate-800 border focus:ring-2 ring-indigo-500 outline-none transition-all" />
+                
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white p-4 rounded-2xl font-black shadow-lg shadow-indigo-500/20 transition-all">
+                    Войти в систему
+                </button>
+            </form>
+        </div>
+    </div>
+</Layout>

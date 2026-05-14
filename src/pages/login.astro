@@ -1,0 +1,47 @@
+---
+export const prerender = false;
+import Layout from "@/layouts/Layout.astro";
+import "@/styles/global.css";
+---
+<Layout>
+<div class="min-h-screen flex items-center justify-center bg-slate-50 px-4">
+    <div class="max-w-md w-full bg-white p-8 rounded-3xl border shadow-sm">
+        <h1 class="text-2xl font-black mb-6">Регистрация клиента</h1>
+        
+        <form id="register-form" class="space-y-4">
+            <input type="text" name="name" placeholder="Ваше имя" required class="w-full p-3 border rounded-xl" />
+            <input type="email" name="email" placeholder="Email" required class="w-full p-3 border rounded-xl" />
+            <input type="password" name="password" placeholder="Пароль" required class="w-full p-3 border rounded-xl" />
+            <button type="submit" class="w-full bg-indigo-600 text-white p-3 rounded-xl font-bold">Создать аккаунт</button>
+        </form>
+
+        <hr class="my-6" />
+        
+        <a href="/admin/login" class="text-center block text-sm text-slate-400 hover:text-indigo-600 transition">
+            Я администратор
+        </a>
+    </div>
+</div>
+</Layout>
+<script>
+    import { createAuthClient } from "better-auth/client";
+    const authClient = createAuthClient();
+
+    document.getElementById("register-form")?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target as HTMLFormElement);
+        const email = formData.get("email") as string;
+        const password = formData.get("password") as string;
+        const name = formData.get("name") as string;
+
+        const { data, error } = await authClient.signUp.email({
+            email,
+            password,
+            name,
+            callbackURL: "/" // После регистрации — на главную
+        });
+
+        if (error) alert(error.message);
+        else alert("Вы успешно зарегистрированы как клиент!");
+    });
+</script>
