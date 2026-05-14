@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Information</title>
+
+</head>
+<body>
+    <h1>Student Information</h1>
+    <p>Click <a href="api\student" target="_blank">here</a> to fetch student data from the server.</p>
+
+    <button id="fetchDataID">Fetch Student Data</button>
+    <hr>
+    <h3> JSON Structure</h3>
+    <p id="studentData"> This will be JSON structure of student Data</p>
+
+
+    <h3> Find Student by Email Address</h3>
+    <input type="text" id="emailInputID" placeholder="Enter student email">
+    <hr>
+    <h3> Details </h3>
+    <p> Name:  <span id = "studentNameID" style= "color: blue;">  </span></p>
+    <p> Course: <span id = "studentCourseID" style= "color: blue;">  </span></p>
+    <p> ID: <span id = "studentID" style= "color: blue;">  </span></p>
+
+    <iframe width="1050" height="591" 
+    src="https://www.youtube.com/embed/VeQg2auVlU4" title="Muppet Songs: Animal - Drum Solo" 
+    frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+    
+    
+
+    <script>
+        const emailInput = document.getElementById('emailInputID');
+        
+
+        const fetchDataButton = document.getElementById('fetchDataID');
+        const studentDataParagraph = document.getElementById('studentData');
+        const studentNameSpan = document.getElementById('studentNameID');
+        const studentCourseSpan = document.getElementById('studentCourseID');
+        const studentIDSpan = document.getElementById('studentID');
+        
+        fetchDataButton.addEventListener('click', fetchStudentData);
+
+        async function fetchStudentData() {
+            try{
+
+                
+               const emailaddress = emailInput.value.trim();  // remove leading/trailing whitespaces
+                
+                const response = await fetch(`http://localhost:3000/api/student?email=${encodeURIComponent(emailaddress)}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const studentData =  await response.json();    
+                displayJSONData(studentData);
+                displayStudentDetails(studentData);
+
+            }
+            catch(error){
+                alert("An error occurred while fetching data: \n" + error.message);
+            }
+           
+        }
+
+        function displayJSONData(studentData) {
+            studentDataParagraph.textContent = JSON.stringify(studentData);          
+        }
+
+        function displayStudentDetails(studentData) {
+            // This function can be implemented to display student details in a more user-friendly format
+            studentNameSpan.textContent = studentData.applicantName;
+            studentCourseSpan.textContent = studentData.courseName;
+            studentIDSpan.textContent = studentData.id;
+        }
+    </script>
+
+</body>
+</html>

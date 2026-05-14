@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application</title>
+    <!-- Link to your external CSS file -->
+    <!-- <link rel="stylesheet" href="css\gemini.css"> -->
+</head>
+<body>
+    <h1>Welcome to the Application Page</h1>
+
+    <!-- <form action="https://httpbin.org/post" method="post" target="_blank">
+      <label for "username"> Username: </label>
+
+      <input type="text" name="username">
+
+
+      <input type="submit" value="Submit">
+      </form> -->
+
+<form action="http://localhost:3000/apply" method="post" target="_blank">
+        <label for "applicantName"> Enter your name:</label>
+        <input type="text" name="applicantName" required>
+        <br><br>
+        <label for "applicantEmail">Email address:</label>
+        <input type="text" name="applicantEmail" required>
+        <br><br>
+       
+        <label for "selectedCourse">Select course:</label>
+            <select name="selectedCourse" required>
+                <option value="">Select a course</option>
+                <option value="Eng101">Engineering</option>
+                <option value="Law101">Law</option>
+                <option value="His101">History</option>
+            </select>
+        <br><br>
+        
+        <fieldset class="radio-group">
+            <legend>Select your preferred level of study</legend>
+            <label><input type="radio" name="courseLevel" value="L1" required> Level&nbsp;1</label><br>
+            <label><input type="radio" name="courseLevel" value="L2"> Level&nbsp;2</label><br>
+            <label><input type="radio" name="courseLevel" value="L3"> Level&nbsp;3</label><br>
+        </fieldset>
+        <br>
+        <button type="submit">Apply Now</button>
+    </form>
+      
+
+
+</body>
+</html>

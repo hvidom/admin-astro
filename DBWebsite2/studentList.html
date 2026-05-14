@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Records</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --bg-color: #f4f7f6;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            padding: 20px;
+            color: var(--primary-color);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        /* Table Styling */
+        .grid-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .grid-table thead {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .grid-table th, .grid-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .grid-table tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .status-msg {
+            text-align: center;
+            margin-top: 20px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Student Enrolment Records</h2>
+    
+    <table class="grid-table" id="studentTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Applicant Name</th>
+                <th>Course Name</th>
+                <th>Email</th>
+                <th>Level</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            <!-- Data will be injected here -->
+        </tbody>
+    </table>
+
+    <div id="loading" class="status-msg">Loading records...</div>
+</div>
+
+<script>
+    async function fetchStudents() {
+        const tableBody = document.getElementById('tableBody');
+        const loadingMsg = document.getElementById('loading');
+
+        try {
+            // Adjust the URL to match your Server.js endpoint (e.g., /api/students)
+            const response = await fetch('/api/students'); 
+            
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const students = await response.json();
+            // alert("Data fetched successfully! Check the console for details.");
+            // console.log('Fetched Students:', students);
+
+            // Clear loading message
+            loadingMsg.style.display = 'none';
+
+            // Build rows
+            tableBody.innerHTML = students.map(student => `
+                <tr>
+                    <td>${student.id}</td>
+                    <td>${student.applicantName}</td>
+                    <td>${student.courseName}</td>
+                    <td>${student.email}</td>
+                    <td>${student.level}</td>
+                </tr>
+            `).join('');
+
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            loadingMsg.textContent = 'Failed to load records. Please ensure the server is running.';
+            loadingMsg.style.color = 'red';
+        }
+    }
+
+    // Initialise fetch on page load
+    window.onload = fetchStudents;
+</script>
+
+</body>
+</html>

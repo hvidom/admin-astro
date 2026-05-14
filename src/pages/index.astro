@@ -1,0 +1,64 @@
+---
+// src/pages/index.astro
+import { db } from "@/lib/db";
+import ClientsTable from "@/components/ClientsTable"; // Наш React-компонент
+import Layout from "@/layouts/Layout.astro";
+
+// 1. Получаем данные из local.db на этапе серверного рендеринга (SSR)
+const allClients = await db.query.clients.findMany();
+const allOrders = await db.query.orders.findMany();
+const contactSubmissions = await db.query.contactSubmissions.findMany();
+
+// Вычисляем быструю статистику для дашборда
+const totalSales = allOrders.reduce((sum, order) => sum + order.amount, 0);
+---
+
+<Layout>
+  <body class="bg-slate-50 min-h-screen text-slate-900 antialiased">
+    
+    <header class="border-b bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="w-8 h-8 bg-black rounded-lg flex items-center justify-center text-white font-bold text-sm">A</div>
+          <span class="font-semibold text-lg tracking-tight">Astro Admin</span>
+        </div>
+        <div class="flex items-center space-x-4">
+          <span class="text-xs bg-emerald-100 text-emerald-800 font-medium px-2.5 py-0.5 rounded-full flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+            БД: local.db
+          </span>
+        </div>
+      </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+      
+      <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <div class="bg-white p-6 rounded-xl border shadow-sm">
+          <p class="text-sm font-medium text-muted-foreground text-slate-500">Всего клиентов</p>
+          <h3 class="text-3xl font-bold tracking-tight mt-1">{allClients.length}</h3>
+        </div>
+        <div class="bg-white p-6 rounded-xl border shadow-sm">
+          <p class="text-sm font-medium text-muted-foreground text-slate-500">Заказов оформлено</p>
+          <h3 class="text-3xl font-bold tracking-tight mt-1">{allOrders.length}</h3>
+        </div>
+        <div class="bg-white p-6 rounded-xl border shadow-sm">
+          <p class="text-sm font-medium text-muted-foreground text-slate-500">Общая сумма продаж</p>
+          <h3 class="text-3xl font-bold tracking-tight mt-1">
+            {totalSales.toLocaleString('ru-RU', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })}
+          </h3>
+        </div>
+      </section>
+
+      <div class="space-y-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-3xl font-bold tracking-tight">Панель управления</h1>
+            <p class="text-slate-500 text-sm mt-1">Просмотр и редактирование данных в реальном времени.</p>
+          </div>
+        </div>
+
+        <ClientsTable initialClients={allClients} client:load />
+      </div>
+
+    </Layout>

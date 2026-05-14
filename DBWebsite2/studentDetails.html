@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Records</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --bg-color: #f4f7f6;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            padding: 20px;
+            color: var(--primary-color);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        /* Table Styling */
+        .grid-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .grid-table thead {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .grid-table th, .grid-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .grid-table tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .status-msg {
+            text-align: center;
+            margin-top: 20px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Student Enrolment Records</h2>
+    
+    <table class="grid-table" id="studentTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Applicant Name</th>
+                <th>Course Name</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            <!-- Data will be injected here -->
+        </tbody>
+    </table>
+
+    <!-- New Detail Section -->
+    <div id="detailSection" style="display: none; margin-top: 30px; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <h3>Student Detailed View</h3>
+        <hr>
+        <p><strong>ID:</strong> <span id="detId"></span></p>
+        <p><strong>Name:</strong> <span id="detName"></span></p>
+        <p><strong>Course:</strong> <span id="detCourse"></span></p>
+        <p><strong>Email:</strong> <span id="detEmail"></span></p>
+        <p><strong>Level:</strong> <span id="detLevel"></span></p>
+        <!-- <p><strong>Full Record JSON:</strong></p> -->
+        <!-- <pre id="detRaw" style="background: #eee; padding: 10px;"></pre> -->
+    </div>
+
+
+    <div id="loading" class="status-msg">Loading records...</div>
+</div>
+
+<script>
+    let allStudents = []; // Store records locally
+
+    async function fetchStudents() {
+        try {
+            const response = await fetch('/api/students');
+            allStudents = await response.json();
+            
+            const tableBody = document.getElementById('tableBody');
+            document.getElementById('loading').style.display = 'none';
+
+            tableBody.innerHTML = allStudents.map(student => `
+                <tr>
+                    <td>
+                        <a href="#" onclick="showDetails(${student.id}); return false;">
+                            ${student.id}
+                        </a>
+                    </td>
+                    <td>${student.applicantName}</td>
+                    <td>${student.courseName}</td>
+                    <td>${student.email}</td>
+                    <td>${student.level}</td>
+                </tr>
+            `).join('');
+        } catch (error) {
+            console.error('Fetch error:', error);
+        }
+    }
+
+    function showDetails(id) {
+        // Find the specific student in our local array
+        const student = allStudents.find(student => student.id == id);
+        
+        if (student) {
+            const detailSection = document.getElementById('detailSection');
+            
+            // Populate the details
+            document.getElementById('detId').textContent = student.id;
+            document.getElementById('detName').textContent = student.applicantName;
+            document.getElementById('detCourse').textContent = student.courseName;
+            document.getElementById('detEmail').textContent = student.email;
+            document.getElementById('detLevel').textContent = student.level;
+            // document.getElementById('detRaw').textContent = JSON.stringify(student, null, 2);
+            
+            // Make the section visible
+            detailSection.style.display = 'block';
+            
+            // Smooth scroll to the details
+            detailSection.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+
+    window.onload = fetchStudents;
+</script>
+
+</body>
+</html>

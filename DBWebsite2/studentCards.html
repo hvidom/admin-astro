@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Records – Card View</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --bg-color: #f4f7f6;
+            --accent: #3498db;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            padding: 20px;
+            color: var(--primary-color);
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .status-msg {
+            text-align: center;
+            margin-top: 20px;
+            font-style: italic;
+        }
+
+        /* Card styling */
+        .student-card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+            padding: 20px 24px;
+            margin-top: 10px;
+        }
+
+        .student-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 10px;
+        }
+
+        .student-card-header h3 {
+            margin: 0;
+            font-size: 1.4rem;
+        }
+
+        .student-meta {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        .student-field {
+            margin: 8px 0;
+        }
+
+        .student-label {
+            font-weight: 600;
+            margin-right: 6px;
+        }
+
+        /* Navigation */
+        .nav-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 16px;
+        }
+
+        .nav-bar button {
+            padding: 8px 14px;
+            border-radius: 6px;
+            border: none;
+            background-color: var(--accent);
+            color: #fff;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .nav-bar button[disabled] {
+            background-color: #bdc3c7;
+            cursor: default;
+        }
+
+        .nav-info {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        /* Raw JSON block */
+        #detRaw {
+            background: #eee;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Student Enrolment Records</h2>
+
+    <div id="loading" class="status-msg">Loading records...</div>
+    <div id="noData" class="status-msg" style="display:none;">No records found.</div>
+
+    <!-- Single Student Card -->
+    <div id="studentCard" class="student-card" style="display:none;">
+        <div class="student-card-header">
+            <h3 id="detName">Student Name</h3>
+            <span class="student-meta">ID: <span id="detId">  </span></span>
+        </div>
+
+        <div class="student-field">
+            <span class="student-label">Course:</span>
+            <span id="detCourse"></span>
+        </div>
+
+        <div class="student-field">
+            <span class="student-label">Email:</span>
+            <span id="detEmail"></span>
+        </div>
+
+        <div class="student-field">
+            <span class="student-label">Level:</span>
+            <span id="detLevel"></span>
+        </div>
+       
+        <div class="nav-bar">
+            <button id="prevBtn">Previous</button>
+            <span class="nav-info" id="navInfo"></span>
+            <button id="nextBtn">Next</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let allStudents = [];
+    let currentIndex = 0;
+
+    async function fetchStudents() {
+        try {
+            const response = await fetch('/api/students');
+            allStudents = await response.json();
+
+            document.getElementById('loading').style.display = 'none';
+
+
+            // if there's no data to display, show the "No records found" message
+            if (!Array.isArray(allStudents) || allStudents.length == 0) {
+                document.getElementById('noData').style.display = 'block';
+                return;
+            }
+
+            // Show the first student card
+
+            document.getElementById('studentCard').style.display = 'block';
+            currentIndex = 0;   // points to the first element of the array
+            renderCurrentStudent();
+        } catch (error) {
+            console.error('Fetch error:', error);
+            document.getElementById('loading').textContent =
+                'An error occurred while loading records.';
+        }
+    }
+
+    function renderCurrentStudent() {
+        const student = allStudents[currentIndex];
+
+        if (!student) return;
+
+        document.getElementById('detId').textContent = student.id;
+        document.getElementById('detName').textContent = student.applicantName;
+        document.getElementById('detCourse').textContent = student.courseName;
+        document.getElementById('detEmail').textContent = student.email;
+        document.getElementById('detLevel').textContent = student.level;
+        const navInfo = document.getElementById('navInfo');
+        navInfo.textContent = `Record ${currentIndex + 1} of ${allStudents.length}`;
+
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        // disable prev button if we're at the first record, disable next button if we're at the last record
+        prevBtn.disabled = (currentIndex == 0);
+        nextBtn.disabled = (currentIndex == allStudents.length - 1);
+    }
+
+    document.getElementById('prevBtn').addEventListener('click', function () {
+            currentIndex--;
+            renderCurrentStudent();
+    });
+
+    document.getElementById('nextBtn').addEventListener('click', function () {
+            currentIndex++;
+            renderCurrentStudent();
+    });
+
+    window.onload = fetchStudents;
+</script>
+
+</body>
+</html>
