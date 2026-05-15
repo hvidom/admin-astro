@@ -11,7 +11,7 @@ const allItems = await db.query.items.findMany();
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Наш Магазин | Главная</title>
+    <title>Webstore | Home</title>
   </head>
   <body class="bg-white text-slate-900 antialiased">
     
@@ -20,14 +20,18 @@ const allItems = await db.query.items.findMany();
       <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
         <span class="text-2xl font-black tracking-tighter text-indigo-600">STORE.</span>
         
-        <nav class="hidden md:flex gap-8 text-sm font-medium">
-          <a href="#" class="hover:text-indigo-600 transition">Каталог</a>
-          <a href="#" class="hover:text-indigo-600 transition">О нас</a>
-          <a href="#" class="hover:text-indigo-600 transition">Контакты</a>
+        <nav class="hidden md:flex gap-8 text-sm font-medium"> 
+          <a href="#" class="hover:text-indigo-600 transition">Shop</a> 
+          <a href="#" class="hover:text-indigo-600 transition">About us</a> 
+          <a href="#" class="hover:text-indigo-600 transition">Contacts</a> 
         </nav>
 
+       
+        <a href="/login" class="inline-flex items-center gap-2 bg-slate-900 text-white px-5 py-2.5 rounded-full text-sm font-bold hover:bg-indigo-600 transition-all shadow-lg shadow-indigo-100">
+          Login
+        </a>
         <a href="/admin" class="inline-flex items-center gap-2 bg-slate-900 text-white px-5 py-2.5 rounded-full text-sm font-bold hover:bg-indigo-600 transition-all shadow-lg shadow-indigo-100">
-          Войти как Админ
+          Admin Acess
         </a>
       </div>
     </header>
@@ -36,48 +40,59 @@ const allItems = await db.query.items.findMany();
     <section class="py-20 bg-slate-50">
       <div class="max-w-7xl mx-auto px-6 text-center">
         <h1 class="text-5xl md:text-7xl font-black mb-6 tracking-tight">
-          Лучшие товары <br/> <span class="text-indigo-600">в один клик.</span>
-        </h1>
-        <p class="text-slate-500 text-lg max-w-2xl mx-auto">
-          Добро пожаловать в наш магазин. Мы собрали лучшие предложения специально для вас.
-        </p>
+          Best products <br/> <span class="text-indigo-600">in one click.</span>
+          </h1>
+          <p class="text-slate-500 text-lg max-w-2xl mx-auto">
+          Welcome to our store. We've collected the best deals especially for you.
+          </p>
       </div>
     </section>
 
-    <!-- Product Grid -->
-    <main class="max-w-7xl mx-auto py-20 px-6">
-      <h2 class="text-3xl font-bold mb-12">Наш ассортимент</h2>
-      
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-        {allItems.map(item => (
-          <div class="group relative flex flex-col">
-            <div class="aspect-square w-full overflow-hidden rounded-3xl bg-slate-100 mb-4 ring-1 ring-slate-200">
-              <div class="w-full h-full flex items-center justify-center text-slate-300 group-hover:scale-110 transition-transform duration-500">
-                <!-- Заглушка иконки товара -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-20 h-20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                </svg>
-              </div>
-            </div>
+   <!-- Product Grid -->
+<main class="max-w-7xl mx-auto py-20 px-6">
+  <h2 class="text-3xl font-bold mb-12">Our assortment</h2>
+  
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+    {allItems.map(item => (
+      <div class="group relative flex flex-col">
+        <div class="aspect-square w-full overflow-hidden rounded-3xl bg-slate-100 mb-4 ring-1 ring-slate-200">
+          <div class="w-full h-full flex items-center justify-center text-slate-300 group-hover:scale-105 transition-transform duration-500">
             
-            <div class="flex justify-between items-start">
-              <div>
-                <h3 class="font-bold text-lg text-slate-800">{item.name}</h3>
-                <p class="text-sm text-slate-500 uppercase font-semibold tracking-widest">{item.type}</p>
-              </div>
-              <p class="text-lg font-black text-indigo-600">${item.price}</p>
-            </div>
-            
-            <button class="mt-4 w-full bg-slate-100 py-3 rounded-2xl font-bold text-sm group-hover:bg-indigo-600 group-hover:text-white transition-all">
-              Купить сейчас
-            </button>
+            {item.image ? (
+              // Отображаем загруженную картинку, если она есть
+              <img 
+                src={item.image} 
+                alt={item.name} 
+                class="w-full h-full object-cover transition-transform duration-500"
+              />
+            ) : (
+              // Показываем SVG-заглушку, если картинки нет
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-20 h-20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              </svg>
+            )}
+
           </div>
-        ))}
+        </div>
+        
+        <div class="flex justify-between items-start">
+          <div>
+            <h3 class="font-bold text-lg text-slate-800">{item.name}</h3>
+            <p class="text-sm text-slate-500 uppercase font-semibold tracking-widest">{item.type}</p>
+          </div>
+          <p class="text-lg font-black text-indigo-600">${item.price}</p>
+        </div>
+        
+        <button class="mt-4 w-full bg-slate-100 py-3 rounded-2xl font-bold text-sm group-hover:bg-indigo-600 group-hover:text-white transition-all">
+          Buy Now!
+        </button>
       </div>
+    ))}
+  </div>
     </main>
 
     <footer class="border-t py-12 text-center text-slate-400 text-sm">
-      &copy; 2026 STORE. Все права защищены.
+      &copy; 2026 STORE. All rights reserved.
     </footer>
 
   </body>

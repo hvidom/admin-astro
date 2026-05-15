@@ -13,7 +13,7 @@ export const POST: APIRoute = async ({ request }) => {
     const itemData = await db.select().from(items).where(eq(items.id, Number(itemId))).get();
 
     if (!itemData) {
-      return new Response(JSON.stringify({ error: "Товар не найден" }), { status: 404 });
+      return new Response(JSON.stringify({ error: "Product not found" }), { status: 404 });
     }
 
     // 2. Вставляем заказ с реальной ценой
@@ -28,6 +28,6 @@ export const POST: APIRoute = async ({ request }) => {
     return new Response(JSON.stringify({ success: true }), { status: 200 });
   } catch (err) {
     console.error(err);
-    return new Response(JSON.stringify({ error: "Ошибка сервера" }), { status: 500 });
+    return new Response(JSON.stringify({ error: "Server error" }), { status: 500 });
   }
 };

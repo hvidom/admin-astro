@@ -5,21 +5,18 @@ import "@/styles/global.css";
 ---
 <Layout title="Регистрация">
 <div class="min-h-screen flex items-center justify-center bg-slate-50 px-4">
-    <div class="max-w-md w-full bg-white p-8 rounded-3xl border shadow-sm">
-        <h1 class="text-2xl font-black mb-2">Создать аккаунт</h1>
-        <p class="text-slate-500 text-sm mb-6">Станьте нашим клиентом сегодня</p>
+    <div class="max-w-md w-full bg-white p-8 rounded-3xl border shadow-sm"> 
+        <h1 class="text-2xl font-black mb-2">Create an account</h1> 
+        <p class="text-slate-500 text-sm mb-6">Become our client today</p> 
         
-        <form id="signup-form" class="space-y-4">
-            <input type="text" name="name" placeholder="Ваше имя" required class="w-full p-3 border rounded-xl outline-none focus:ring-2 ring-indigo-500/20 focus:border-indigo-500" />
-            <input type="email" name="email" placeholder="Email" required class="w-full p-3 border rounded-xl outline-none focus:ring-2 ring-indigo-500/20 focus:border-indigo-500" />
-            <input type="password" name="password" placeholder="Пароль" required class="w-full p-3 border rounded-xl outline-none focus:ring-2 ring-indigo-500/20 focus:border-indigo-500" />
-            <button type="submit" id="submit-btn" class="w-full bg-indigo-600 text-white p-3 rounded-xl font-bold hover:bg-indigo-700 transition-all active:scale-[0.98]">
-                Зарегистрироваться
-            </button>
+        <form id="signup-form" class="space-y-4"> 
+        <input type="text" name="name" placeholder="Your name" required class="w-full p-3 border rounded-xl outline-none focus:ring-2 ring-indigo-500/20 focus:border-indigo-500" /> 
+        <input type="email" name="email" placeholder="Email" required class="w-full p-3 border rounded-xl outline-none focus:ring-2 ring-indigo-500/20 focus:border-indigo-500" /> 
+        <input type="password" name="password" placeholder="Password" required class="w-full p-3 border rounded-xl outline-none focus:ring-2 ring-indigo-500/20 focus:border-indigo-500" /> 
+        <button type="submit" id="submit-btn" class="w-full bg-indigo-600 text-white p-3 rounded-xl font-bold hover:bg-indigo-700 transition-all active:scale-[0.98]"> 
+        Register 
+        </button> 
         </form>
-
-        <p class="mt-6 text-center text-sm text-slate-600">
-            Уже есть аккаунт? <a href="/login" class="text-indigo-600 font-bold hover:underline">Войти</a>
         </p>
     </div>
 </div>
@@ -34,7 +31,7 @@ import "@/styles/global.css";
         const formData = new FormData(e.target as HTMLFormElement);
         
         btn.disabled = true;
-        btn.innerText = "Создание...";
+        btn.innerText = "Creating...";
 
         const { error } = await authClient.signUp.email({
             email: formData.get("email") as string,
@@ -46,7 +43,7 @@ import "@/styles/global.css";
         if (error) {
             alert(error.message);
             btn.disabled = false;
-            btn.innerText = "Зарегистрироваться";
+            btn.innerText = "Sing up";
         } else {
             window.location.href = "/dashboard";
         }

@@ -24,7 +24,7 @@ if (Astro.request.method === "POST") {
         return Astro.redirect("/admin");
     } else {
         // 2. Присваиваем значение при ошибке
-        errorMessage = "Неверный логин или пароль";
+        errorMessage = "Incorrect login or password";
     }
 }
 ---
@@ -51,7 +51,7 @@ if (Astro.request.method === "POST") {
                     class="w-full p-4 rounded-2xl bg-slate-900 border-slate-800 border focus:ring-2 ring-indigo-500 outline-none transition-all" />
                 
                 <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white p-4 rounded-2xl font-black shadow-lg shadow-indigo-500/20 transition-all">
-                    Войти в систему
+                    Sign in
                 </button>
             </form>
         </div>

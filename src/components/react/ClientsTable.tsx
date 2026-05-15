@@ -34,7 +34,7 @@ export default function ClientsTable({ initialClients }: Props) {
       setClients(clients.map(c => c.id === editingClient.id ? editingClient : c));
       setEditingClient(null);
     } else {
-      alert('Ошибка при сохранении');
+      alert('Error saving');
     }
   };
 
@@ -44,9 +44,9 @@ export default function ClientsTable({ initialClients }: Props) {
         <TableHeader>
           <TableRow>
             <TableHead>ID</TableHead>
-            <TableHead>Имя</TableHead>
+            <TableHead>Name</TableHead>
             <TableHead>Email</TableHead>
-            <TableHead className="text-right">Действия</TableHead>
+            <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -59,17 +59,17 @@ export default function ClientsTable({ initialClients }: Props) {
                 <Dialog>
                   <DialogTrigger asChild>
                     <Button variant="outline" size="sm" onClick={() => setEditingClient(client)}>
-                      Редактировать
+                      Edit
                     </Button>
                   </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
-                      <DialogTitle>Редактировать клиента #{client.id}</DialogTitle>
+                      <DialogTitle>Edit client #{client.id}</DialogTitle>
                     </DialogHeader>
                     {editingClient && (
                       <form onSubmit={handleSave} className="space-y-4 mt-4">
                         <div>
-                          <label className="text-sm font-medium">Имя</label>
+                          <label className="text-sm font-medium">Name</label>
                           <Input 
                             value={editingClient.name} 
                             onChange={e => setEditingClient({...editingClient, name: e.target.value})}
@@ -83,7 +83,7 @@ export default function ClientsTable({ initialClients }: Props) {
                             onChange={e => setEditingClient({...editingClient, email: e.target.value})}
                           />
                         </div>
-                        <Button type="submit" className="w-full">Сохранить</Button>
+                        <Button type="submit" className="w-full">Save</Button>
                       </form>
                     )}
                   </DialogContent>

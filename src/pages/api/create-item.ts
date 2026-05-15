@@ -9,6 +9,6 @@ export const POST: APIRoute = async ({ request }) => {
     await db.insert(items).values({ name, price, type, stock: 10, status: "available" });
     return new Response(JSON.stringify({ success: true }), { status: 200 });
   } catch (err) {
-    return new Response(JSON.stringify({ error: "Ошибка создания" }), { status: 500 });
+    return new Response(JSON.stringify({ error: "Creation error" }), { status: 500 });
   }
 };

@@ -1,74 +1,271 @@
 ---
 export const prerender = false;
 import { auth } from "@/lib/auth";
+import { db } from "@/lib/db";
+import { clients, items, orders } from "@/db/schema";
+import { eq, desc } from "drizzle-orm";
 import "@/styles/global.css";
 
-const session = await auth.api.getSession({
+const session = await auth.api.getSession({ 
   headers: Astro.request.headers,
 });
 
-if (!session) {
+if (!session) { 
   return Astro.redirect("/login");
 }
 
 const { user } = session;
+
+// 1. АВТОМАТИЧЕСКИЙ ПЕРЕВОД ИЗ USER В CLIENT
+// Ищем пользователя в таблице клиентов по email
+let clientRecord = await db.query.clients.findFirst({
+  where: eq(clients.email, user.email)
+});
+
+// Если пользователя нет в базе клиентов CRM, создаем его
+if (!clientRecord) {
+  const newClients = await db.insert(clients).values({
+    name: user.name,
+    email: user.email,
+    status: "active", // Присваиваем рабочий статус клиента
+  }).returning();
+  clientRecord = newClients[0];
+}
+
+// 2. ЗАГРУЗКА ДАННЫХ ДЛЯ ДАШБОРДА КЛИЕНТА
+// Получаем доступные товары для выпадающего списка в форме заказа
+const availableItems = await db.query.items.findMany();
+
+// Получаем историю заказов именно этого клиента
+const clientOrders = await db.query.orders.findMany({
+  where: eq(orders.clientId, clientRecord!.id),
+  orderBy: [desc(orders.createdAt)]
+});
+
+// Считаем общую сумму покупок клиента
+const totalSpent = clientOrders
+  .filter(o => o.status === "completed")
+  .reduce((sum, o) => sum + o.amount, 0);
 ---
 
-<html lang="ru">
-  <head>
-    <meta charset="utf-8" />
-    <title>Личный кабинет</title>
-  </head>
-  <body class="bg-slate-50 antialiased">
-    <nav class="bg-white border-b sticky top-0 z-10">
-      <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-        <span class="font-black text-xl tracking-tight">MY DASHBOARD</span>
-        
-        <div class="flex items-center gap-4">
-          <div class="text-right hidden sm:block">
-            <p class="text-sm font-bold leading-none">{user.name}</p>
-            <p class="text-[10px] text-slate-400">Клиент</p>
-          </div>
-          <button id="logout-btn" class="bg-rose-50 text-rose-600 p-2 rounded-lg hover:bg-rose-100 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-          </button>
-        </div>
+<html lang="en"> 
+<head> 
+  <meta charset="utf-8" /> 
+  <title>Personal account</title> 
+</head> 
+<body class="bg-slate-50 antialiased"> 
+  <nav class="bg-white border-b sticky top-0 z-10"> 
+    <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between"> 
+      <span class="font-black text-xl tracking-tight">MY DASHBOARD</span> 
+
+      <div class="flex items-center gap-4"> 
+        <div class="text-right hidden sm:block"> 
+          <p class="text-sm font-bold leading-none">{user.name}</p> 
+          <p class="text-[10px] text-indigo-600 font-bold mt-1 bg-indigo-50 px-2 py-0.5 rounded-full uppercase">CRM Client</p> 
+        </div> 
+        <button id="logout-btn" class="bg-rose-50 text-rose-600 p-2 rounded-lg hover:bg-rose-100 transition-colors"> 
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg> 
+        </button>
       </div>
-    </nav>
+    </div>
+  </nav>
 
-    <main class="max-w-5xl mx-auto py-10 px-4">
-      <header class="mb-10">
-        <h1 class="text-4xl font-black text-slate-900 tracking-tight">Добро пожаловать!</h1>
-        <p class="text-slate-500 mt-2">Здесь вы можете управлять вашими заказами и профилем.</p>
-      </header>
+  <main class="max-w-5xl mx-auto py-10 px-4 space-y-8">
+    <header>
+      <h1 class="text-4xl font-black text-slate-900 tracking-tight">Welcome, {user.name}!</h1>
+      <p class="text-slate-500 mt-2">Here you can place new orders and track your service status.</p>
+    </header>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <!-- Карточка профиля -->
-        <div class="col-span-1 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
-          <h3 class="font-bold text-slate-400 uppercase text-[10px] tracking-widest mb-4">Данные профиля</h3>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Profile Card -->
+      <div class="col-span-1 space-y-6">
+        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+          <h3 class="font-bold text-slate-400 uppercase text-[10px] tracking-widest mb-4">Data Profile</h3>
           <div class="space-y-1">
             <p class="text-slate-900 font-bold">{user.name}</p>
-            <p class="text-sm text-slate-500">{user.email}</p>
+            <p class="text-sm text-slate-500 truncate">{user.email}</p>
+            <p class="text-xs text-slate-400 mt-2">CRM System ID: #{clientRecord!.id}</p>
           </div>
         </div>
 
-        <!-- Заглушка для заказов -->
-        <div class="md:col-span-2 bg-indigo-600 p-8 rounded-3xl shadow-xl shadow-indigo-100 text-white">
-          <h3 class="text-indigo-200 font-bold uppercase text-[10px] tracking-widest mb-4">Статистика</h3>
-          <p class="text-2xl font-black italic opacity-50">У вас пока нет активных заказов</p>
-          <button class="mt-6 bg-white text-indigo-600 px-6 py-2 rounded-xl font-bold text-sm hover:bg-indigo-50 transition-colors">
-            Заказать услугу
-          </button>
+        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+          <h3 class="font-bold text-slate-400 uppercase text-[10px] tracking-widest mb-2">Total Paid</h3>
+          <p class="text-3xl font-black text-indigo-600">${totalSpent}</p>
+          <p class="text-xs text-slate-400 mt-1">For all completed orders</p>
         </div>
       </div>
-    </main>
 
-    <script>
-      import { authClient } from "@/lib/auth-client";
-      document.getElementById('logout-btn')?.addEventListener('click', async () => {
-        await authClient.signOut();
-        window.location.href = "/login";
+      <!-- Orders Section -->
+      <div class="md:col-span-2 space-y-6">
+        <div class="bg-indigo-600 p-8 rounded-3xl shadow-xl shadow-indigo-100 text-white flex flex-col justify-between sm:flex-row sm:items-center gap-4">
+          <div>
+            <h3 class="text-indigo-200 font-bold uppercase text-[10px] tracking-widest mb-2">Quick Action</h3>
+            <p class="text-xl font-bold">Need a new product or service?</p>
+          </div>
+          <button id="open-order-modal" class="bg-white text-indigo-600 px-6 py-3 rounded-2xl font-bold text-sm hover:bg-indigo-50 transition-all shadow-md active:scale-95 whitespace-nowrap"> 
+            Create New Order 
+          </button> 
+        </div>
+
+        <!-- Orders Table / History -->
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="p-6 border-b">
+            <h3 class="font-bold text-slate-800 text-lg">Your Orders History</h3>
+          </div>
+          
+          {clientOrders.length === 0 ? (
+            <div class="p-8 text-center text-slate-400 text-sm">
+              You haven't placed any orders yet.
+            </div>
+          ) : (
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="bg-slate-50 text-slate-500 font-semibold text-xs uppercase border-b border-slate-100">
+                    <th class="p-4">Order ID</th>
+                    <th class="p-4">Amount</th>
+                    <th class="p-4">Status</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 text-sm">
+                  {clientOrders.map(order => (
+                    <tr class="hover:bg-slate-50/50 transition-colors">
+                      <td class="p-4 font-mono text-xs text-slate-400">#{order.id}</td>
+                      <td class="p-4 font-bold text-slate-800">${order.amount}</td>
+                      <td class="p-4">
+                        <span class={`text-[10px] px-2 py-0.5 rounded-full font-black uppercase ${order.status === 'completed' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}>
+                          {order.status === 'completed' ? 'Paid' : 'Pending'}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </div> 
+    </div> 
+  </main>
+
+  <!-- MODAL FORM FOR NEW ORDER -->
+  <div id="order-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+    <div class="w-full max-w-md bg-white p-6 shadow-2xl rounded-3xl border border-slate-100 animate-in fade-in zoom-in-95 duration-200">
+      <h3 class="text-xl font-black text-slate-900 mb-4">Checkout New Order</h3>
+      
+      <form id="order-form" class="space-y-4">
+        <!-- Скрытые технические данные -->
+        <input type="hidden" name="clientId" value={clientRecord!.id} />
+        <input type="hidden" name="status" value="pending" />
+
+        <div>
+          <label class="text-xs font-bold text-slate-400 block mb-1 uppercase">Select Item</label>
+          <select id="item-select" name="itemId" required class="w-full p-3 border border-slate-200 rounded-xl bg-white text-sm focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all">
+            <option value="" data-price="0">-- Choose from catalog --</option>
+            {availableItems.map(item => (
+              <option value={item.id} data-price={item.price}>
+                {item.name} (${item.price})
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label class="text-xs font-bold text-slate-400 block mb-1 uppercase">Quantity</label>
+          <input id="item-quantity" type="number" name="quantity" value="1" min="1" required class="w-full p-3 border border-slate-200 rounded-xl bg-white text-sm focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all" />
+        </div>
+
+        <!-- Автоматический калькулятор цены -->
+        <div class="bg-slate-50 p-4 rounded-2xl flex justify-between items-center border border-slate-100">
+          <span class="text-sm font-bold text-slate-500">Order Total:</span>
+          <span id="total-price-display" class="text-2xl font-black text-indigo-600">$0</span>
+          <input type="hidden" id="amount-input" name="amount" value="0" />
+        </div>
+
+        <div class="flex justify-end gap-2 pt-4 border-t mt-6">
+          <button type="button" id="close-order-modal" class="px-4 py-2 text-sm font-medium text-slate-500 hover:bg-slate-100 rounded-xl transition-colors">Cancel</button>
+          <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm rounded-xl px-6 py-2 shadow-lg shadow-indigo-100 transition-all">Place Order</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script> 
+    import { authClient } from "@/lib/auth-client"; 
+
+    // Логика выхода из аккаунта
+    document.getElementById('logout-btn')?.addEventListener('click', async () => { 
+      await authClient.signOut(); 
+      window.location.href = "/login"; 
+    }); 
+
+    // Модальное окно и динамический расчет стоимости
+    const modal = document.getElementById('order-modal');
+    const openBtn = document.getElementById('open-order-modal');
+    const closeBtn = document.getElementById('close-order-modal');
+    
+    const itemSelect = document.getElementById('item-select') as HTMLSelectElement;
+    const quantityInput = document.getElementById('item-quantity') as HTMLInputElement;
+    const totalDisplay = document.getElementById('total-price-display');
+    const amountInput = document.getElementById('amount-input') as HTMLInputElement;
+    const orderForm = document.getElementById('order-form') as HTMLFormElement;
+
+    // Функция пересчета стоимости
+    function calculateTotal() {
+      const selectedOption = itemSelect.options[itemSelect.selectedIndex];
+      const price = parseFloat(selectedOption?.getAttribute('data-price') || '0');
+      const quantity = parseInt(quantityInput.value || '1', 10);
+      
+      const total = price * quantity;
+      
+      if (totalDisplay) totalDisplay.innerText = `$${total}`;
+      if (amountInput) amountInput.value = total.toString();
+    }
+
+    // Слушатели для калькулятора
+    itemSelect?.addEventListener('change', calculateTotal);
+    quantityInput?.addEventListener('input', calculateTotal);
+
+    // Открытие/Закрытие модалки
+    openBtn?.addEventListener('click', () => {
+  modal?.classList.remove('hidden', 'items-center');
+  modal?.classList.add('flex', 'items-center');
+});
+
+// Закрытие модалки
+closeBtn?.addEventListener('click', () => {
+  modal?.classList.remove('flex', 'items-center');
+  modal?.classList.add('hidden');
+});
+    // Отправка формы заказа на бэкенд через API
+    orderForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const formData = new FormData(orderForm);
+      const payload = {
+        clientId: Number(formData.get('clientId')),
+        itemId: Number(formData.get('itemId')),
+        amount: Number(formData.get('amount')),
+        status: formData.get('status'),
+      };
+
+      if (!payload.itemId) {
+        alert("Please select an item!");
+        return;
+      }
+
+      const res = await fetch('/api/crm/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
       });
-    </script>
-  </body>
+
+      if (res.ok) {
+        window.location.reload(); // Перезагружаем страницу, чтобы обновить таблицы
+      } else {
+        alert("Failed to checkout order");
+      }
+    });
+  </script> 
+</body>
 </html>

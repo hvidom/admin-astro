@@ -16,6 +16,6 @@ export const PUT: APIRoute = async ({ params, request }) => {
 
     return new Response(JSON.stringify({ success: true }), { status: 200 });
   } catch (error) {
-    return new Response(JSON.stringify({ error: 'Ошибка при обновлении базы данных' }), { status: 500 });
+    return new Response(JSON.stringify({ error: 'Error updating database' }), { status: 500 });
   }
 };

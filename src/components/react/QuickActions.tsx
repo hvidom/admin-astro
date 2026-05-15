@@ -40,10 +40,10 @@ export default function QuickActions({ clients = [], items = [] }: Props) {
       const result = await response.json();
 
       if (response.ok) {
-        setMessage({ text: "✅ Готово! Страница обновится...", isError: false });
+        setMessage({ text: "✅ Done! The page will refresh...", isError: false });
         setTimeout(() => window.location.reload(), 800);
-      } else {
-        setMessage({ text: `❌ Ошибка: ${result.error || "Сервер отклонил запрос"}`, isError: true });
+        } else {
+        setMessage({ text: `❌ Error: ${result.error || "The server rejected the request"}`, isError: true });
       }
     } catch (err) {
       setMessage({ text: "❌ Ошибка сети", isError: true });
@@ -55,7 +55,7 @@ export default function QuickActions({ clients = [], items = [] }: Props) {
   return (
     <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-bold text-slate-800 tracking-tight">Панель управления записями</h2>
+        <h2 className="text-lg font-bold text-slate-800 tracking-tight">Control Panel</h2>
         {loading && <Loader2 className="w-5 h-5 animate-spin text-indigo-600" />}
       </div>
       
@@ -65,21 +65,21 @@ export default function QuickActions({ clients = [], items = [] }: Props) {
           onClick={() => setActiveForm(activeForm === "client" ? null : "client")}
           className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${activeForm === "client" ? "bg-indigo-600 text-white shadow-md" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
         >
-          <UserPlus className="w-4 h-4 inline mr-2" /> Клиент
+          <UserPlus className="w-4 h-4 inline mr-2" /> Client
         </button>
 
         <button
           onClick={() => setActiveForm(activeForm === "item" ? null : "item")}
           className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${activeForm === "item" ? "bg-indigo-600 text-white shadow-md" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
         >
-          <FolderPlus className="w-4 h-4 inline mr-2" /> Товар
+          <FolderPlus className="w-4 h-4 inline mr-2" /> Product
         </button>
 
         <button
           onClick={() => setActiveForm(activeForm === "order" ? null : "order")}
           className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${activeForm === "order" ? "bg-indigo-600 text-white shadow-md" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
         >
-          <ShoppingBag className="w-4 h-4 inline mr-2" /> Оформить заказ
+          <ShoppingBag className="w-4 h-4 inline mr-2" /> Place an order
         </button>
       </div>
 
@@ -106,8 +106,8 @@ export default function QuickActions({ clients = [], items = [] }: Props) {
           <input type="text" name="name" placeholder="Название" required className="bg-white border rounded-lg p-2 text-sm focus:ring-2 ring-indigo-500 outline-none" />
           <input type="number" step="0.01" name="price" placeholder="Цена ($)" required className="bg-white border rounded-lg p-2 text-sm focus:ring-2 ring-indigo-500 outline-none" />
           <select name="type" className="bg-white border rounded-lg p-2 text-sm outline-none">
-            <option value="product">Товар</option>
-            <option value="service">Услуга</option>
+          <option value="product">Product</option> 
+          <option value="service">Service</option>
           </select>
           <button type="submit" disabled={loading} className="bg-slate-900 text-white rounded-lg text-sm font-bold hover:bg-black transition-all">Добавить</button>
         </form>
@@ -119,20 +119,20 @@ export default function QuickActions({ clients = [], items = [] }: Props) {
           <div className="flex flex-col gap-1">
             <label className="text-[10px] font-bold text-indigo-500 uppercase ml-1 tracking-widest">Кто покупает</label>
             <select name="clientId" required className="bg-white border rounded-lg p-2 text-sm outline-none">
-              <option value="">Выбрать...</option>
+              <option value="">Choose...</option>
               {clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </div>
           <div className="flex flex-col gap-1">
             <label className="text-[10px] font-bold text-indigo-500 uppercase ml-1 tracking-widest">Что покупает</label>
             <select name="itemId" required className="bg-white border rounded-lg p-2 text-sm outline-none">
-              <option value="">Выбрать...</option>
+              <option value="">Choose...</option>
               {items.map(i => <option key={i.id} value={i.id}>{i.name} (${i.price})</option>)}
             </select>
           </div>
           <div className="flex items-end">
             <button type="submit" disabled={loading} className="w-full bg-indigo-600 text-white py-2 rounded-lg text-sm font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200">
-              {loading ? "Запись..." : "Подтвердить заказ"}
+              {loading ? "Recording..." : "Confirm order"}
             </button>
           </div>
         </form>

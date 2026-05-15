@@ -96,6 +96,7 @@ export const items = sqliteTable("items", {
   type: text("type").notNull(), // "product" | "service"
   stock: integer("stock").default(0), // Для физических товаров
   status: text("status").notNull().default("available"), // available | out_of_stock
+  image: text("image"), // Сюда будем писать путь: "/images/file-name.jpg"
 });
 
 // 4. Заказы
