@@ -61,11 +61,12 @@ Originally built as a monolithic **Express.js** server, this module has been ref
 
 ### Development
 
-```bash
-# Install dependencies using Bun
+## Install dependencies using Bun
+
 bun install
 
-# Start the local development server
+## Start the local development server
+
 bun run dev
 
 ## 🚀 Development & Core Commands
@@ -122,7 +123,7 @@ This project connects to a local instance database using **Drizzle ORM** with `b
 
 ## 🛠️ Stack Summary
 
-- **Framework Engine:** Astro v6 (configured in SSR `standalone` Node.js execution mode).
-- **Component Ecosystem:** React 19 + Shadcn UI components optimized via `class-variance-authority` and `tailwind-merge`.
-- **Styling Architecture:** Tailwind CSS v4 running via native Vite compiler plugins (`@tailwindcss/vite`).
-- **Database Architecture:** Local SQLite engine automated by Drizzle ORM tracking, operating synchronously with ultra-low latency.
+* **Framework Engine:** Astro v6 (configured in SSR `standalone` Node.js execution mode).
+* **Component Ecosystem:** React 19 + Shadcn UI components optimized via `class-variance-authority` and `tailwind-merge`.
+* **Styling Architecture:** Tailwind CSS v4 running via native Vite compiler plugins (`@tailwindcss/vite`).
+* **Database Architecture:** Local SQLite engine automated by Drizzle ORM tracking, operating synchronously with ultra-low latency.
