@@ -3,6 +3,7 @@ import BaseHead from "@/components/layouts/base-head.astro";
 import TailwindIndicator from "@/components/layouts/tailwind-indicator.astro";
 import Navbar from "@/components/nav/navbar";
 
+
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -20,6 +21,7 @@ const { title, description, mainClass } = Astro.props;
 	</head>
 	<body class="min-h-screen bg-background text-foreground relative overflow-x-hidden">
 		<TailwindIndicator />
+
 		<div class="relative z-10">
 			<Navbar client:load />
             <main class={cn(mainClass)}>

@@ -1,5 +1,7 @@
 ---
 export const prerender = false;
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import Layout from "@/layouts/Layout.astro";
 // 1. Инициализируем переменную заранее
 let errorMessage: string | null = null; 
@@ -28,12 +30,12 @@ if (Astro.request.method === "POST") {
     }
 }
 ---
-<Layout>
+<Layout title="Admin Login Page" description="My admin login page with static .env">
 
-    <div class="min-h-screen flex items-center justify-center bg-slate-950 px-4 text-white">
+    <div class="min-h-screen flex items-center justify-center">
         <div class="max-w-md w-full space-y-8">
             <div class="text-center">
-                <h1 class="text-3xl font-black tracking-tighter">ADMIN ACCESS</h1>
+                <h1 class="text-3xl font-black scroll-m-20 text-center text-indigo-600 tracking-tight text-balance">ADMIN ACCESS</h1>
             </div>
     
             <form method="POST" class="space-y-4">
@@ -44,15 +46,15 @@ if (Astro.request.method === "POST") {
                     </div>
                 )}
                 
-                <input name="username" type="text" placeholder="Username" required 
-                    class="w-full p-4 rounded-2xl bg-slate-900 border-slate-800 border focus:ring-2 ring-indigo-500 outline-none transition-all" />
+                <Input name="username" type="text" placeholder="Username" required 
+                    className="w-full p-4 rounded-2xl  border-slate-800 border focus:ring-2 ring-indigo-500 outline-none transition-all" />
                 
-                <input name="password" type="password" placeholder="Password" required 
-                    class="w-full p-4 rounded-2xl bg-slate-900 border-slate-800 border focus:ring-2 ring-indigo-500 outline-none transition-all" />
+                <Input name="password" type="password" placeholder="Password" required 
+                    className="w-full p-4 rounded-2xl  border-slate-800 border focus:ring-2 ring-indigo-500 outline-none transition-all" />
                 
-                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white p-4 rounded-2xl font-black shadow-lg shadow-indigo-500/20 transition-all">
+                <Button type="submit" variant={"link"} className="w-full bg-indigo-600 hover:bg-indigo-500 text-white p-4 rounded-2xl font-black shadow-lg shadow-indigo-500/20 transition-all">
                     Sign in
-                </button>
+                </Button>
             </form>
         </div>
     </div>

@@ -8,8 +8,6 @@ import {
   MotionValue,
 } from "motion/react";
 
-
-
 export const HeroParallax = ({
   products,
 }: {
@@ -17,6 +15,7 @@ export const HeroParallax = ({
     title: string;
     link: string;
     thumbnail: string;
+    price: string; // Added price here
   }[];
 }) => {
   const firstRow = products.slice(0, 5);
@@ -57,7 +56,7 @@ export const HeroParallax = ({
   return (
     <div
       ref={ref}
-      className="h-[300vh] py-40 overflow-hidden  antialiased relative flex flex-col self-auto perspective-[1000px] transform-3d"
+      className="h-[300vh] py-40 overflow-hidden antialiased relative flex flex-col self-auto perspective-[1000px] transform-3d"
     >
       <Header />
       <motion.div
@@ -67,7 +66,6 @@ export const HeroParallax = ({
           translateY,
           opacity,
         }}
-        className=""
       >
         <motion.div className="flex flex-row-reverse space-x-reverse space-x-20 mb-20">
           {firstRow.map((product) => (
@@ -78,7 +76,7 @@ export const HeroParallax = ({
             />
           ))}
         </motion.div>
-        <motion.div className="flex flex-row  mb-20 space-x-20 ">
+        <motion.div className="flex flex-row mb-20 space-x-20 ">
           {secondRow.map((product) => (
             <ProductCard
               product={product}
@@ -103,15 +101,23 @@ export const HeroParallax = ({
 
 export const Header = () => {
   return (
-    <div className="max-w-7xl relative mx-auto py-20 md:py-40 px-4 w-full  left-0 top-0">
-      <h1 className="text-2xl md:text-7xl font-bold dark:text-white">
-        The Ultimate <br /> development studio
+    <div className="max-w-7xl relative mx-auto py-20 md:py-40 px-4 w-full left-0 top-0">
+      <h1 className="text-2xl md:text-7xl font-extrabold scroll-m-20 tracking-tight text-balance">
+        Elevate Your Style <br /> with Premium Quality
       </h1>
-      <p className="max-w-2xl text-base md:text-xl mt-8 dark:text-neutral-200">
-        We build beautiful products with the latest technologies and frameworks.
-        We are a team of passionate developers and designers that love to build
-        amazing products.
+      <p className="max-w-2xl md:text-xl mt-8 text-lg font-semibold text-neutral-400">
+        Discover our curated collection of exclusive products designed for those 
+        who demand excellence. Shop the latest arrivals and redefine your 
+        everyday essentials today.
       </p>
+      <div className="mt-10 flex gap-4">
+        <button className="px-6 py-3 bg-white text-black rounded-full font-bold hover:bg-neutral-200 transition">
+          Shop Collection
+        </button>
+        <button className="px-6 py-3 border border-white text-white rounded-full font-bold hover:bg-white/10 transition">
+          View Arrivals
+        </button>
+      </div>
     </div>
   );
 };
@@ -124,6 +130,7 @@ export const ProductCard = ({
     title: string;
     link: string;
     thumbnail: string;
+    price: string;
   };
   translate: MotionValue<number>;
 }) => {
@@ -140,7 +147,7 @@ export const ProductCard = ({
     >
       <a
         href={product.link}
-        className="block group-hover/product:shadow-2xl "
+        className="block group-hover/product:shadow-2xl"
       >
         <img
           src={product.thumbnail}
@@ -150,10 +157,27 @@ export const ProductCard = ({
           alt={product.title}
         />
       </a>
-      <div className="absolute inset-0 h-full w-full opacity-0 group-hover/product:opacity-80 bg-black pointer-events-none"></div>
-      <h2 className="absolute bottom-4 left-4 opacity-0 group-hover/product:opacity-100 text-white">
-        {product.title}
-      </h2>
+      
+      {/* Overlay background */}
+      <div className="absolute inset-0 h-full w-full opacity-0 group-hover/product:opacity-80 bg-black pointer-events-none transition duration-200"></div>
+      
+      {/* Product Info and Action Row */}
+      <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover/product:opacity-100 text-white transition duration-200 flex flex-col gap-2">
+        <h2 className="text-xl font-bold">{product.title}</h2>
+        
+        <div className="flex items-center justify-between">
+          <span className="text-lg font-bold text-emerald-400">
+            {product.price}
+          </span>
+          
+          <a 
+            href={product.link}
+            className="px-4 py-2 bg-white text-black text-xs font-bold uppercase rounded-lg hover:bg-neutral-200 transition duration-150"
+          >
+            Buy Now
+          </a>
+        </div>
+      </div>
     </motion.div>
   );
 };
