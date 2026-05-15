@@ -1,10 +1,72 @@
-# Project Script Reference
+# 🚀 Astro Admin Dashboard
 
-This repository utilizes a high-performance modern web stack powered by **Astro**, **Bun (as runtime & package manager)**, **React & Shadcn UI**, **Tailwind CSS v4 (via Vite)**, and **Drizzle ORM** targeting a standalone local SQLite database environment.
-
-The primary goal of this project is to build a modern, rapid, and lightweight **CRM / Admin Panel System** to manage, analyze, and update database entities such as **Clients**, **Orders**, **Analytics**, **Partners**, **Products**, and **Services**.
+A high-performance, dark-mode ready **CRM & Admin Panel** built with a modern web stack. This repository marks the transition from a traditional Express architecture to a lightning-fast, type-safe environment powered by **Astro** and **Bun**.
 
 ---
+
+## 🛠️ Tech Stack & Resources
+
+| Technology | Purpose | Documentation |
+| :--- | :--- | :--- |
+| **Astro v6** | Web Framework (SSR Mode) | [astro.build](https://astro.build/) |
+| **Bun** | Runtime, Package Manager & Bundler | [bun.sh](https://bun.sh/) |
+| **Drizzle ORM** | Type-safe TypeScript ORM | [orm.drizzle.team](https://orm.drizzle.team/) |
+| **Tailwind v4** | CSS Framework (Vite Engine) | [tailwindcss.com](https://tailwindcss.com/) |
+| **Shadcn UI** | Accessible UI Components | [ui.shadcn.com](https://ui.shadcn.com/) |
+| **React 19** | Component Library | [react.dev](https://react.dev/) |
+
+---
+
+## 📦 Key Packages Explained
+
+Based on the latest `package.json`, here are the critical tools powering this dashboard:
+
+* **`better-auth`**: A modern, framework-agnostic authentication library that handles sessions and user management with zero-config database integration.
+* **`@dnd-kit`**: A collection of lightweight, modular toolkits for drag-and-drop interfaces (used for rearranging dashboard widgets or list items).
+* **`@tanstack/react-table`**: The "headless" industry standard for building powerful, sortable, and filterable data grids.
+* **`motion`**: High-performance animation library (formerly Framer Motion) used for fluid transitions and UI effects.
+* **`recharts`**: A composable charting library built on React components, utilized for the Analytics views.
+* **`next-themes`**: Logic for seamless Dark Mode toggling and system preference detection.
+* **`sonner`**: An opinionated toast component for beautiful, non-intrusive notifications.
+
+---
+
+## 🗄️ Database Strategy (Drizzle ORM)
+
+This project uses **Drizzle ORM** to bridge the gap between TypeScript and SQL.
+
+**Flexibility Note:** While currently configured for a local `better-sqlite3` instance for speed and simplicity, Drizzle’s architecture is "dialect-agnostic." This means you can point your connection string to **any database**—including **PostgreSQL, MySQL, Turso (LibSQL), or Cloudflare D1**—with minimal configuration changes.
+
+### DB Management Commands
+
+* `bun run db:push`: Instantly syncs your `schema.ts` with the database (perfect for rapid prototyping).
+* `bun run db:seed`: Populates your database with dummy data for testing CRM features.
+* `bun run db:migrate`: Generates and applies structured SQL migrations for production safety.
+* `bun run studio`: Opens a visual SQL editor in your browser at `localhost:4984`.
+
+---
+
+## 📂 Project Migration: `DBWebsite2`
+
+The `DBWebsite2` folder contains a specialized **demo project migration**.
+
+Originally built as a monolithic **Express.js** server, this module has been refactored to run on **Bun** and **Hono**.
+
+* **Goal:** To demonstrate the massive performance gains and reduced memory footprint of moving from Node/Express to the Bun/Hono ecosystem.
+* **Features:** High-speed edge-ready routing and significantly lower latency for API endpoints.
+
+---
+
+## 🚀 Getting Started
+
+### Development
+
+```bash
+# Install dependencies using Bun
+bun install
+
+# Start the local development server
+bun run dev
 
 ## 🚀 Development & Core Commands
 
