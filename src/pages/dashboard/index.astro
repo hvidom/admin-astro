@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { clients, items, orders } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
-import "@/styles/global.css";
+import Layout from "@/layouts/Layout.astro";
 
 const session = await auth.api.getSession({ 
   headers: Astro.request.headers,
@@ -48,22 +48,18 @@ const totalSpent = clientOrders
   .reduce((sum, o) => sum + o.amount, 0);
 ---
 
-<html lang="en"> 
-<head> 
-  <meta charset="utf-8" /> 
-  <title>Personal account</title> 
-</head> 
-<body class="bg-slate-50 antialiased"> 
-  <nav class="bg-white border-b sticky top-0 z-10"> 
+<Layout title="Personal Account" description="Your personal dashbord">
+<body class="antialiased"> 
+  <nav class="border-b sticky top-0 z-10"> 
     <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between"> 
-      <span class="font-black text-xl tracking-tight">MY DASHBOARD</span> 
+      <span class="text-xl tracking-tight">MY DASHBOARD</span> 
 
       <div class="flex items-center gap-4"> 
         <div class="text-right hidden sm:block"> 
           <p class="text-sm font-bold leading-none">{user.name}</p> 
-          <p class="text-[10px] text-indigo-600 font-bold mt-1 bg-indigo-50 px-2 py-0.5 rounded-full uppercase">CRM Client</p> 
+          <p class="text-[10px] text-indigo-600 font-bold mt-1 bg-foreground px-2 py-0.5 rounded-full uppercase">CRM Client</p> 
         </div> 
-        <button id="logout-btn" class="bg-rose-50 text-rose-600 p-2 rounded-lg hover:bg-rose-100 transition-colors"> 
+        <button id="logout-btn" class="bg-foreground text-rose-600 p-2 rounded-lg hover:bg-rose-100 transition-colors"> 
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg> 
         </button>
       </div>
@@ -72,8 +68,8 @@ const totalSpent = clientOrders
 
   <main class="max-w-5xl mx-auto py-10 px-4 space-y-8">
     <header>
-      <h1 class="text-4xl font-black text-slate-900 tracking-tight">Welcome, {user.name}!</h1>
-      <p class="text-slate-500 mt-2">Here you can place new orders and track your service status.</p>
+      <h1 class="text-4xl font-black tracking-tight">Welcome, {user.name}!</h1>
+      <p class="mt-2">Here you can place new orders and track your service status.</p>
     </header>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -267,5 +263,4 @@ closeBtn?.addEventListener('click', () => {
       }
     });
   </script> 
-</body>
-</html>
+</Layout>

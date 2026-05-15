@@ -1,17 +1,30 @@
 ---
-import "@/styles/global.css"
+import BaseHead from "@/components/layouts/base-head.astro";
+import TailwindIndicator from "@/components/layouts/tailwind-indicator.astro";
+import Navbar from "@/components/nav/navbar";
+
+import { cn } from "@/lib/utils";
+
+type Props = {
+  title: string;
+  description?: string;
+  mainClass?: string;
+};
+
+const { title, description, mainClass } = Astro.props;
 ---
 
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Admin Panel for my Drizzle DB</title>
+		<BaseHead title={title} description={description} />
 	</head>
-	<body>
-		<slot />
+	<body class="min-h-screen bg-background text-foreground relative overflow-x-hidden">
+		<TailwindIndicator />
+		<div class="relative z-10">
+			<Navbar client:load />
+            <main class={cn(mainClass)}>
+				<slot />
+            </main>
+		</div>
 	</body>
 </html>

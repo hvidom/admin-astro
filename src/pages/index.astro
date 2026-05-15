@@ -3,61 +3,46 @@
 import { db } from "@/lib/db";
 import "@/styles/global.css";
 
-// Загружаем только товары для витрины
+import HeroParallaxDemo from "@/components/hero-parallax-demo";
+
+import { items as itemsTable } from "@/db/schema"; 
+import Layout from "@/layouts/Layout.astro";
+
+// 2. Fetch live item data from your aliased schema table
+const dbItems = await db.select().from(itemsTable);
+
+// 3. Map database rows to the structure expected by HeroParallax
+const formattedProducts = dbItems.map((item) => ({
+  title: item.name,
+  link: `/catalog/${item.id}`, 
+  thumbnail: item.image || "https://www.aceternity.com/images/products/thumbnails/new/moonbeam.png" 
+}));
+
 const allItems = await db.query.items.findMany();
 ---
 
-<html lang="ru">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Webstore | Home</title>
-  </head>
-  <body class="bg-white text-slate-900 antialiased">
+<Layout title="Webstore Home" description="Homepage of my demo Webstore">
     
-    <!-- Header -->
-    <header class="border-b sticky top-0 bg-white/80 backdrop-blur-md z-50">
-      <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-        <span class="text-2xl font-black tracking-tighter text-indigo-600">STORE.</span>
-        
-        <nav class="hidden md:flex gap-8 text-sm font-medium"> 
-          <a href="#" class="hover:text-indigo-600 transition">Shop</a> 
-          <a href="#" class="hover:text-indigo-600 transition">About us</a> 
-          <a href="#" class="hover:text-indigo-600 transition">Contacts</a> 
-        </nav>
-
-       
-        <a href="/login" class="inline-flex items-center gap-2 bg-slate-900 text-white px-5 py-2.5 rounded-full text-sm font-bold hover:bg-indigo-600 transition-all shadow-lg shadow-indigo-100">
-          Login
-        </a>
-        <a href="/admin" class="inline-flex items-center gap-2 bg-slate-900 text-white px-5 py-2.5 rounded-full text-sm font-bold hover:bg-indigo-600 transition-all shadow-lg shadow-indigo-100">
-          Admin Acess
-        </a>
-      </div>
-    </header>
-
     <!-- Hero Section -->
-    <section class="py-20 bg-slate-50">
+    <section class="py-20">
       <div class="max-w-7xl mx-auto px-6 text-center">
         <h1 class="text-5xl md:text-7xl font-black mb-6 tracking-tight">
           Best products <br/> <span class="text-indigo-600">in one click.</span>
           </h1>
-          <p class="text-slate-500 text-lg max-w-2xl mx-auto">
+          <p class="text-lg max-w-2xl mx-auto">
           Welcome to our store. We've collected the best deals especially for you.
           </p>
       </div>
     </section>
-
+    <HeroParallaxDemo products={formattedProducts} client:load />
    <!-- Product Grid -->
 <main class="max-w-7xl mx-auto py-20 px-6">
   <h2 class="text-3xl font-bold mb-12">Our assortment</h2>
-  
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
     {allItems.map(item => (
       <div class="group relative flex flex-col">
         <div class="aspect-square w-full overflow-hidden rounded-3xl bg-slate-100 mb-4 ring-1 ring-slate-200">
           <div class="w-full h-full flex items-center justify-center text-slate-300 group-hover:scale-105 transition-transform duration-500">
-            
             {item.image ? (
               // Отображаем загруженную картинку, если она есть
               <img 
@@ -91,9 +76,7 @@ const allItems = await db.query.items.findMany();
   </div>
     </main>
 
-    <footer class="border-t py-12 text-center text-slate-400 text-sm">
+    <footer class="border-t py-12 text-center  text-sm">
       &copy; 2026 STORE. All rights reserved.
     </footer>
-
-  </body>
-</html>
+</Layout>
