@@ -66,13 +66,13 @@ export default function AdminDashboard() {
     }
   };
 
-  if (!data) return <div className="p-8 text-center text-slate-500 animate-pulse font-medium">Loading CRM data...</div>;
+  if (!data) return <div className="p-8 text-center  animate-pulse font-medium">Loading CRM data...</div>;
 
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[240px_1fr] lg:grid-cols-[280px_1fr]">
       
       {/* SIDEBAR */}
-      <aside className="hidden border-r bg-white md:block">
+      <aside className="hidden border-r  md:block">
         <div className="flex h-full flex-col">
           <div className="h-14 flex items-center px-6 border-b font-black text-indigo-600 gap-2 tracking-wider">
             <Package2 className="h-5 w-5" /> <span>ASTRO CRM</span>
@@ -88,9 +88,9 @@ export default function AdminDashboard() {
       </aside>
 
       {/* MAIN SYSTEM CONTAINER */}
-      <div className="flex flex-col bg-slate-50/50">
-        <header className="h-14 border-b bg-white flex items-center px-6 justify-between sticky top-0 z-10 backdrop-blur-md">
-          <h2 className="font-bold text-slate-800 uppercase tracking-wider text-xs">{activeTab}</h2>
+      <div className="flex flex-col ">
+        <header className="h-14 border-b  flex items-center px-6 justify-between sticky top-0 z-10 backdrop-blur-md">
+          <h2 className="font-bold  uppercase tracking-wider text-xs">{activeTab}</h2>
           <Button variant="ghost" onClick={() => window.location.href='/admin/login'} className="text-rose-500 hover:bg-rose-50 hover:text-rose-600 rounded-xl">
             <LogOut size={18} className="mr-2"/> Log Out
           </Button>
@@ -118,9 +118,9 @@ export default function AdminDashboard() {
               onDelete={(id) => handleGenericAction("DELETE", "clients", { id })} 
               renderRow={(c: any) => ( 
                 <> 
-                  <TableCell className="font-bold text-slate-900">{c.name}</TableCell> 
-                  <TableCell className="text-slate-600">{c.email}</TableCell> 
-                  <TableCell className="text-slate-500">{c.phone || "—"}</TableCell> 
+                  <TableCell className="font-bold ">{c.name}</TableCell> 
+                  <TableCell className="">{c.email}</TableCell> 
+                  <TableCell className="">{c.phone || "—"}</TableCell> 
                 </> 
               )} 
             /> 
@@ -140,13 +140,13 @@ export default function AdminDashboard() {
                   <>
                     <TableCell>
                       {i.image ? (
-                        <img src={i.image} alt={i.name} className="w-10 h-10 object-cover rounded-xl border border-slate-200/60 shadow-inner bg-white" />
+                        <img src={i.image} alt={i.name} className="w-10 h-10 object-cover rounded-xl border border-slate-200/60 shadow-inner " />
                       ) : (
-                        <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400 text-sm border border-dashed">📦</div>
+                        <div className="w-10 h-10 rounded-xl flex items-center justify-center text-slate-400 text-sm border border-dashed">📦</div>
                       )}
                     </TableCell>
-                    <TableCell className="font-bold text-slate-900">{i.name}</TableCell>
-                    <TableCell className="font-semibold text-slate-700">${i.price}</TableCell>
+                    <TableCell className="font-bold ">{i.name}</TableCell>
+                    <TableCell className="font-semibold ">${i.price}</TableCell>
                     <TableCell>
                       <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${i.type === 'product' ? 'bg-blue-50 text-blue-700 border border-blue-100' : 'bg-purple-50 text-purple-700 border border-purple-100'}`}>
                         {i.type === 'product' ? 'Product' : 'Service'}
@@ -158,32 +158,32 @@ export default function AdminDashboard() {
 
               {/* PRODUCT MODAL OVERLAY */}
               {isItemModalOpen && (
-                <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
-                  <Card className="w-full max-w-md bg-white p-6 shadow-2xl rounded-2xl border-none">
+                <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
+                  <Card className="w-full max-w-md p-6 shadow-2xl rounded-2xl border-none">
                     <CardTitle className="text-xl font-black text-slate-900 mb-4">
                       {editingItem ? "Edit Item" : "Create New Item"}
                     </CardTitle>
                     <form onSubmit={handleItemSubmit} className="space-y-4">
                       <div>
-                        <label className="text-xs font-bold text-slate-400 block mb-1 uppercase tracking-wider">Title / Name</label>
+                        <label className="text-xs font-bold  block mb-1 uppercase tracking-wider">Title / Name</label>
                         <Input name="name" defaultValue={editingItem?.name || ""} required className="rounded-xl border-slate-200 focus-visible:ring-indigo-500" />
                       </div>
                       <div>
-                        <label className="text-xs font-bold text-slate-400 block mb-1 uppercase tracking-wider">Price ($)</label>
+                        <label className="text-xs font-bold  block mb-1 uppercase tracking-wider">Price ($)</label>
                         <Input name="price" type="number" defaultValue={editingItem?.price || ""} required className="rounded-xl border-slate-200 focus-visible:ring-indigo-500" />
                       </div>
                       <div>
-                        <label className="text-xs font-bold text-slate-400 block mb-1 uppercase tracking-wider">Type</label>
+                        <label className="text-xs font-bold block mb-1 uppercase tracking-wider">Type</label>
                         <select name="type" defaultValue={editingItem?.type || "product"} className="w-full p-2.5 border border-slate-200 rounded-xl bg-white text-sm focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all">
                           <option value="product">Product</option>
                           <option value="service">Service</option>
                         </select>
                       </div>
                       <div>
-                        <label className="text-xs font-bold text-slate-400 block mb-1 uppercase tracking-wider">Image Attachment</label>
+                        <label className="text-xs font-bold  block mb-1 uppercase tracking-wider">Image Attachment</label>
                         <Input name="image" type="file" accept="image/*" className="rounded-xl border-slate-200 file:bg-slate-100 file:border-0 file:rounded-lg file:text-xs file:font-bold cursor-pointer" />
                         {editingItem?.image && (
-                          <p className="text-[10px] text-slate-400 mt-1 truncate">Current file: {editingItem.image}</p>
+                          <p className="text-[10px]  mt-1 truncate">Current file: {editingItem.image}</p>
                         )}
                       </div>
                       <div className="flex justify-end gap-2 pt-4 border-t border-slate-100 mt-6">
@@ -263,30 +263,30 @@ function DashboardOverview({ data }: { data: any }) {
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="p-6 bg-white ring-1 ring-slate-200 rounded-2xl shadow-sm">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total Revenue</span>
+        <div className="p-6  ring-1 ring-slate-200 rounded-2xl shadow-sm">
+          <span className="text-[10px] font-bold  uppercase tracking-widest">Total Revenue</span>
           <p className="text-3xl font-black text-indigo-600 mt-1">${data.totalRevenue.toLocaleString()}</p>
         </div>
-        <div className="p-6 bg-white ring-1 ring-slate-200 rounded-2xl shadow-sm">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total Orders</span>
-          <p className="text-3xl font-black text-slate-900 mt-1">{data.ordersCount}</p>
+        <div className="p-6  ring-1 ring-slate-200 rounded-2xl shadow-sm">
+          <span className="text-[10px] font-bold  uppercase tracking-widest">Total Orders</span>
+          <p className="text-3xl font-black mt-1">{data.ordersCount}</p>
         </div>
-        <div className="p-6 bg-white ring-1 ring-slate-200 rounded-2xl shadow-sm sm:col-span-2 lg:col-span-1">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Registered Clients</span>
-          <p className="text-3xl font-black text-slate-900 mt-1">{data.activeClientsCount}</p>
+        <div className="p-6  ring-1 ring-slate-200 rounded-2xl shadow-sm sm:col-span-2 lg:col-span-1">
+          <span className="text-[10px] font-bold  uppercase tracking-widest">Registered Clients</span>
+          <p className="text-3xl font-black  mt-1">{data.activeClientsCount}</p>
         </div>
       </div>
 
-      <Card className="p-6 border-none ring-1 ring-slate-200 shadow-sm bg-white rounded-2xl">
-        <h3 className="font-bold text-slate-800 text-base mb-4">Recent Activity Log</h3>
+      <Card className="p-6 border-none ring-1 ring-slate-200 shadow-sm rounded-2xl">
+        <h3 className="font-boldtext-base mb-4">Recent Activity Log</h3>
         <div className="divide-y divide-slate-100">
           {data.recentOrders.map((o: any) => (
             <div key={o.id} className="flex justify-between items-center py-3 text-sm first:pt-0 last:pb-0">
               <div className="flex flex-col">
-                <span className="font-bold text-slate-800">{o.clientName}</span>
-                <span className="text-xs text-slate-400">{o.clientEmail}</span>
+                <span className="font-bold ">{o.clientName}</span>
+                <span className="text-xs ">{o.clientEmail}</span>
               </div>
-              <span className="font-mono font-bold text-slate-700">${o.amount}</span>
+              <span className="font-mono font-bold ">${o.amount}</span>
             </div>
           ))}
         </div>
