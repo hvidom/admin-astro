@@ -26,10 +26,10 @@ export function TableSection({
 }: TableSectionProps) {
   return (
     <Card className="border-none shadow-sm ring-1 ring-slate-200">
-      <CardHeader className="flex flex-row items-center justify-between border-b bg-white rounded-t-xl p-4">
-        <CardTitle className="text-lg font-bold text-slate-800">{title}</CardTitle>
+      <CardHeader className="flex flex-row items-center justify-between border-b  rounded-t-xl p-4">
+        <CardTitle className="text-lg font-bold ">{title}</CardTitle>
         {onAdd && (
-          <Button size="sm" onClick={onAdd} className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl">
+          <Button size="sm" onClick={onAdd} className="bg-indigo-600 hover:bg-indigo-700  rounded-xl">
             Добавить +
           </Button>
         )}
@@ -37,22 +37,22 @@ export function TableSection({
       <CardContent className="p-0">
         <Table>
           <TableHeader>
-            <TableRow className="bg-slate-50/70">
-              <TableHead className="w-24 text-center">Действия</TableHead>
+            <TableRow className="bg-background">
+              <TableHead className="w-24 text-center">Actions</TableHead>
               {columns.map((col) => (
-                <TableHead key={col} className="font-semibold text-slate-600">{col}</TableHead>
+                <TableHead key={col} className="font-semibold">{col}</TableHead>
               ))}
             </TableRow>
           </TableHeader>
           <TableBody>
             {items.map((item) => (
-              <TableRow key={item.id} className="hover:bg-slate-50/50 transition-colors">
+              <TableRow key={item.id} className=" transition-colors">
                 <TableCell className="flex justify-center gap-1 py-3">
                   {onEdit && (
                     <Button 
                       variant="ghost" 
                       size="icon" 
-                      className="h-8 w-8 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg" 
+                      className="h-8 w-8  hover:text-indigo-600  rounded-lg" 
                       onClick={() => onEdit(item)}
                     >
                       <Edit3 size={14}/>
@@ -61,7 +61,7 @@ export function TableSection({
                   <Button 
                     variant="ghost" 
                     size="icon" 
-                    className="h-8 w-8 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg" 
+                    className="h-8 w-8  hover:text-rose-600 hover:bg-rose-50 rounded-lg" 
                     onClick={() => onDelete(item.id)}
                   >
                     <Trash2 size={14}/>
@@ -72,8 +72,8 @@ export function TableSection({
             ))}
             {items.length === 0 && (
               <TableRow>
-                <TableCell colSpan={columns.length + 1} className="text-center py-8 text-sm text-slate-400">
-                  Нет данных для отображения
+                <TableCell colSpan={columns.length + 1} className="text-center py-8 text-sm ">
+                  No data to display
                 </TableCell>
               </TableRow>
             )}

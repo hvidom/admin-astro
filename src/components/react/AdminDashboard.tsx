@@ -9,7 +9,16 @@ import { Card, CardTitle } from "@/components/ui/card";
 import { TableCell } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { TableSection } from "./TableSection"; // Imported from file above
-
+import { Label } from "../ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 type Tab = "dashboard" | "orders" | "items" | "clients" | "users";
 
 export default function AdminDashboard() {
@@ -173,14 +182,23 @@ export default function AdminDashboard() {
                         <Input name="price" type="number" defaultValue={editingItem?.price || ""} required className="rounded-xl border-slate-200 focus-visible:ring-indigo-500" />
                       </div>
                       <div>
-                        <label className="text-xs font-bold block mb-1 uppercase tracking-wider">Type</label>
-                        <select name="type" defaultValue={editingItem?.type || "product"} className="w-full p-2.5 border border-slate-200 rounded-xl bg-white text-sm focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all">
-                          <option value="product">Product</option>
-                          <option value="service">Service</option>
-                        </select>
+                        <Label className="text-xs font-bold block mb-1 uppercase tracking-wider">Type</Label>
+                        <Select name="type" defaultValue={editingItem?.type || "product"}>
+
+                          <SelectTrigger className="w-full max-w-48">
+                          <SelectValue placeholder="Select a fruit" />
+                          </SelectTrigger>
+                            <SelectContent>
+                              <SelectGroup>
+                              <SelectLabel>Type</SelectLabel>
+                              <SelectItem value="product">Banana</SelectItem>
+                              <SelectItem value="service">Blueberry</SelectItem>
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
                       </div>
                       <div>
-                        <label className="text-xs font-bold  block mb-1 uppercase tracking-wider">Image Attachment</label>
+                        <Label className="text-xs font-bold  block mb-1 uppercase tracking-wider">Image Attachment</Label>
                         <Input name="image" type="file" accept="image/*" className="rounded-xl border-slate-200 file:bg-slate-100 file:border-0 file:rounded-lg file:text-xs file:font-bold cursor-pointer" />
                         {editingItem?.image && (
                           <p className="text-[10px]  mt-1 truncate">Current file: {editingItem.image}</p>
@@ -206,8 +224,8 @@ export default function AdminDashboard() {
               onDelete={(id) => handleGenericAction("DELETE", "orders", { id })}
               renderRow={(o: any) => (
                 <>
-                  <TableCell className="font-mono text-xs text-slate-400">#{o.id}</TableCell>
-                  <TableCell className="font-medium text-slate-900">{o.client?.name || "Guest"}</TableCell>
+                  <TableCell className="font-mono text-xs ">#{o.id}</TableCell>
+                  <TableCell className="font-medium">{o.client?.name || "Guest"}</TableCell>
                   <TableCell className="font-bold text-indigo-600">${o.amount}</TableCell>
                   <TableCell>
                     <span className={`text-[10px] px-2 py-0.5 rounded-full font-black uppercase ${o.status === 'completed' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-amber-50 text-amber-700 border border-amber-100'}`}>
@@ -228,9 +246,9 @@ export default function AdminDashboard() {
               onDelete={(id) => handleGenericAction("DELETE", "users", { id })}
               renderRow={(u: any) => (
                 <>
-                  <TableCell className="font-mono text-[10px] text-slate-400">{u.id.substring(0, 12)}...</TableCell>
-                  <TableCell className="font-bold text-slate-900">{u.name}</TableCell>
-                  <TableCell className="text-slate-600">{u.email}</TableCell>
+                  <TableCell className="font-mono text-[10px]">{u.id.substring(0, 12)}...</TableCell>
+                  <TableCell className="font-bold">{u.name}</TableCell>
+                  <TableCell className="">{u.email}</TableCell>
                   <TableCell className="text-center text-sm">{u.emailVerified ? "✅" : "❌"}</TableCell>
                 </>
               )}

@@ -7,6 +7,8 @@ import {
   useSpring,
   MotionValue,
 } from "motion/react";
+import { Button } from "./button";
+import { Ghost } from "lucide-react";
 
 export const HeroParallax = ({
   products,
@@ -111,12 +113,12 @@ export const Header = () => {
         everyday essentials today.
       </p>
       <div className="mt-10 flex gap-4">
-        <button className="px-6 py-3 bg-white text-black rounded-full font-bold hover:bg-neutral-200 transition">
+        <Button variant={"ghost"} className="px-6 py-3 bg-white text-black rounded-full font-bold hover:bg-neutral-200 transition">
           Shop Collection
-        </button>
-        <button className="px-6 py-3 border border-white text-white rounded-full font-bold hover:bg-white/10 transition">
+        </Button>
+        <Button className="px-6 py-3 border border-white text-white rounded-full font-bold hover:bg-white/10 transition">
           View Arrivals
-        </button>
+        </Button>
       </div>
     </div>
   );
